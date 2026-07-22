@@ -114,10 +114,23 @@ export const personal = {
   license: "Driver's License: No",
 }
 
-export const references = [
-  { name: 'Anthony', role: 'General Manager — Rietfontein Guest Farm', contact: '084 712 551 | tonycronje@yahoo.co.uk' },
-  { name: 'Khayalethu Tshemese', role: 'Line Manager — Country Road Waterfront', contact: '068 472 7323 | aconcession@woolworths.co.za' },
-  { name: 'Dane Meyer', role: 'General Manager — DHL Bar', contact: '063 691 0436' },
+export const carouselTech = [
+  { label: 'Java', group: 'Programming' },
+  { label: 'JavaScript', group: 'Programming' },
+  { label: 'TypeScript', group: 'Programming' },
+  { label: 'HTML5', group: 'Programming' },
+  { label: 'CSS3', group: 'Programming' },
+  { label: 'C++', group: 'Programming' },
+  { label: 'React', group: 'Frameworks & Tools' },
+  { label: 'WordPress', group: 'Frameworks & Tools' },
+  { label: 'GitHub', group: 'Frameworks & Tools' },
+  { label: 'Visual Studio Code', group: 'Frameworks & Tools' },
+  { label: 'IntelliJ IDEA', group: 'Frameworks & Tools' },
+  { label: 'Figma', group: 'Frameworks & Tools' },
+  { label: 'UI/UX Design', group: 'Design' },
+  { label: 'SQL', group: 'Data & Backend' },
+  { label: 'Supabase', group: 'Data & Backend' },
+  { label: 'Database Design', group: 'Data & Backend' },
 ]
 
 export const links = {

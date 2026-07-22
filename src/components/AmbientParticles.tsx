@@ -19,6 +19,7 @@ export default function AmbientParticles() {
     let h = window.innerHeight
     let dpr = Math.min(window.devicePixelRatio || 1, 2)
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const isMobile = window.innerWidth < 768
 
     const resize = () => {
       w = window.innerWidth
@@ -32,7 +33,7 @@ export default function AmbientParticles() {
     }
     resize()
 
-    const count = Math.min(Math.floor((w * h) / 22000), 72)
+    const count = Math.min(Math.floor((w * h) / (isMobile ? 42000 : 22000)), isMobile ? 36 : 72)
     const particles: P[] = []
     for (let i = 0; i < count; i++) {
       particles.push({
@@ -64,7 +65,9 @@ export default function AmbientParticles() {
     window.addEventListener('resize', resize)
 
     let raf = 0
+    let running = true
     const render = () => {
+      if (!running) return
       cx += (mx - cx) * 0.05
       cy += (my - cy) * 0.05
       ctx.clearRect(0, 0, w, h)
@@ -111,6 +114,18 @@ export default function AmbientParticles() {
       raf = requestAnimationFrame(render)
     }
 
+    // pause when tab hidden / off-screen
+    const onVis = () => {
+      if (document.hidden) {
+        running = false
+        cancelAnimationFrame(raf)
+      } else if (!reduced && !running) {
+        running = true
+        raf = requestAnimationFrame(render)
+      }
+    }
+    document.addEventListener('visibilitychange', onVis)
+
     if (!reduced) {
       raf = requestAnimationFrame(render)
     } else {
@@ -123,10 +138,12 @@ export default function AmbientParticles() {
     }
 
     return () => {
+      running = false
       cancelAnimationFrame(raf)
       window.removeEventListener('resize', resize)
       window.removeEventListener('mousemove', onMove)
       window.removeEventListener('touchmove', onTouch)
+      document.removeEventListener('visibilitychange', onVis)
     }
   }, [])
 

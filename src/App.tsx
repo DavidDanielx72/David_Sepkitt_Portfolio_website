@@ -2,37 +2,41 @@ import { useEffect, useRef, useState } from 'react'
 import CursorGlow from './components/CursorGlow'
 import AmbientParticles from './components/AmbientParticles'
 import ContactForm from './components/ContactForm'
+import TechCarousel from './components/TechCarousel'
 import {
   ArrowUpRight, Mail, Github, Linkedin, Code, Layers, Database, Brain,
-  Sparkles, Cpu, Globe, GraduationCap, MapPin, Languages,
+  Sparkles, Cpu, Globe, GraduationCap, MapPin, Languages, ArrowRight,
 } from './components/Icons'
 import { useReveal } from './hooks/useReveal'
-import { projects, skills, experience, education, personal, references, links } from './data/portfolio'
+import { projects, skills, experience, education, personal, links } from './data/portfolio'
 
 const iconMap: Record<string, React.ComponentType<{ size?: number }>> = {
   code: Code, layers: Layers, database: Database, brain: Brain,
   sparkles: Sparkles, cpu: Cpu, globe: Globe,
 }
 
-const NAV_SECTIONS = ['home', 'about', 'projects', 'experience', 'contact']
+const NAV_ITEMS = ['about', 'projects', 'experience', 'contact']
 
 export default function App() {
   useReveal()
+  // scroll spy — only highlight when scrolled past hero
   const [scrolled, setScrolled] = useState(false)
-  const [hovering, setHovering] = useState(false)
-  const [active, setActive] = useState('home')
+  const [pastHero, setPastHero] = useState(false)
+  const [active, setActive] = useState('')
   const indicatorRef = useRef<HTMLDivElement>(null)
   const linksRef = useRef<Record<string, HTMLAnchorElement | null>>({})
 
-  // shrink on scroll
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40)
+    const onScroll = () => {
+      const y = window.scrollY
+      setScrolled(y > 40)
+      setPastHero(y > window.innerHeight * 0.5)
+    }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // scroll spy
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -40,18 +44,22 @@ export default function App() {
           if (e.isIntersecting) setActive(e.target.id)
         })
       },
-      { rootMargin: '-45% 0px -50% 0px', threshold: 0 }
+      { rootMargin: '-45% 0px -50% 0px', threshold: 0 },
     )
-    NAV_SECTIONS.forEach((id) => {
+    ;['about', 'projects', 'experience', 'contact'].forEach((id) => {
       const el = document.getElementById(id)
       if (el) observer.observe(el)
     })
     return () => observer.disconnect()
   }, [])
 
-  // position the animated underline indicator under the active link
   useEffect(() => {
     const indicator = indicatorRef.current
+    const show = pastHero && active
+    if (!show) {
+      if (indicator) indicator.classList.remove('visible')
+      return
+    }
     const el = linksRef.current[active]
     if (!indicator || !el) return
     const parent = el.parentElement
@@ -61,7 +69,7 @@ export default function App() {
     indicator.style.width = `${er.width}px`
     indicator.style.transform = `translateX(${er.left - pr.left}px)`
     indicator.classList.add('visible')
-  }, [active])
+  }, [active, pastHero])
 
   const onProjectMove = (e: React.MouseEvent<HTMLElement>) => {
     const card = e.currentTarget
@@ -78,7 +86,7 @@ export default function App() {
     e.currentTarget.style.transform = ''
   }
 
-  const navClass = ['nav', scrolled && 'scrolled', hovering && 'hovered'].filter(Boolean).join(' ')
+  const navClass = ['nav', scrolled && 'scrolled'].filter(Boolean).join(' ')
 
   return (
     <>
@@ -93,20 +101,16 @@ export default function App() {
       <CursorGlow />
       <AmbientParticles />
 
-      <nav
-        className={navClass}
-        onMouseEnter={() => setHovering(true)}
-        onMouseLeave={() => setHovering(false)}
-      >
+      <nav className={navClass}>
         <a href="#home" className="nav-brand"><span className="dot" /> David Sepkitt</a>
         <div className="nav-links">
           <div className="nav-indicator" ref={indicatorRef} />
-          {NAV_SECTIONS.filter((s) => s !== 'home').map((id) => (
+          {NAV_ITEMS.map((id) => (
             <a
               key={id}
               href={`#${id}`}
               ref={(el) => { linksRef.current[id] = el }}
-              className={`link${id === 'contact' ? ' nav-cta' : ''}${active === id ? ' active' : ''}`}
+              className={`link${id === 'contact' ? ' nav-cta' : ''}${pastHero && active === id ? ' active' : ''}`}
             >
               {id.charAt(0).toUpperCase() + id.slice(1)}
             </a>
@@ -131,7 +135,13 @@ export default function App() {
               <a href="#projects" className="btn btn-primary">View my work <ArrowUpRight size={15} /></a>
               <a href="#contact" className="btn btn-ghost"><Mail size={15} /> Get in touch</a>
             </div>
+            <div className="hero-socials">
+              <a href={links.github} target="_blank" rel="noreferrer" className="social-btn" aria-label="GitHub"><Github size={16} /></a>
+              <a href={links.linkedin} target="_blank" rel="noreferrer" className="social-btn" aria-label="LinkedIn"><Linkedin size={16} /></a>
+              <a href={links.email} className="social-btn" aria-label="Email"><Mail size={16} /></a>
+            </div>
           </div>
+          <TechCarousel />
         </div>
       </header>
 
@@ -219,6 +229,11 @@ export default function App() {
               )
             })}
           </div>
+          <a href={links.github} target="_blank" rel="noreferrer" className="projects-cta reveal">
+            <Github size={18} />
+            <span>Explore more of my projects on GitHub</span>
+            <ArrowRight size={16} className="cta-arrow" />
+          </a>
         </div>
       </section>
 
@@ -253,15 +268,6 @@ export default function App() {
                   </div>
                 ))}
               </div>
-
-              <div className="refs-title">References</div>
-              {references.map((r) => (
-                <div className="ref-item" key={r.name}>
-                  <div className="r-name">{r.name}</div>
-                  <div className="r-role">{r.role}</div>
-                  <div className="r-contact">{r.contact}</div>
-                </div>
-              ))}
             </div>
           </div>
         </div>
@@ -280,28 +286,23 @@ export default function App() {
                 <h2>Get in touch</h2>
                 <p>Prefer email or socials? Reach me directly through any of these.</p>
                 <div className="ci-rows">
-                  <div className="ci-row">
+                  <a href={links.email} className="ci-row ci-cta">
                     <div className="ico"><Mail size={16} /></div>
-                    <a href={links.email}>{links.emailAddress}</a>
-                  </div>
-                  <div className="ci-row">
+                    <span>Email Me</span>
+                  </a>
+                  <a href={links.github} target="_blank" rel="noreferrer" className="ci-row ci-cta">
                     <div className="ico"><Github size={16} /></div>
-                    <a href={links.github} target="_blank" rel="noreferrer">github.com/DavidDanielx72</a>
-                  </div>
-                  <div className="ci-row">
+                    <span>Check Out My GitHub</span>
+                  </a>
+                  <a href={links.linkedin} target="_blank" rel="noreferrer" className="ci-row ci-cta">
                     <div className="ico"><Linkedin size={16} /></div>
-                    <a href={links.linkedin} target="_blank" rel="noreferrer">linkedin.com/in/david-sepkitt</a>
-                  </div>
+                    <span>Connect With Me on LinkedIn</span>
+                  </a>
                   <div className="ci-row">
                     <div className="ico"><MapPin size={16} /></div>
                     <span>Cape Town, Western Cape</span>
                   </div>
                 </div>
-              </div>
-              <div className="socials">
-                <a href={links.github} target="_blank" rel="noreferrer" className="social-btn" aria-label="GitHub"><Github size={16} /></a>
-                <a href={links.linkedin} target="_blank" rel="noreferrer" className="social-btn" aria-label="LinkedIn"><Linkedin size={16} /></a>
-                <a href={links.email} className="social-btn" aria-label="Email"><Mail size={16} /></a>
               </div>
             </div>
 

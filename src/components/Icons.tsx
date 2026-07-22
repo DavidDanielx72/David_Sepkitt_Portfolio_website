@@ -7,6 +7,7 @@ const S = ({ size = 18, className, children }: P & { children: React.ReactNode }
 )
 
 export const ArrowUpRight = (p: P) => <S {...p}><path d="M7 17 17 7" /><path d="M7 7h10v10" /></S>
+export const ArrowRight = (p: P) => <S {...p}><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></S>
 export const Mail = (p: P) => <S {...p}><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-10 6L2 7" /></S>
 export const Github = (p: P) => (
   <svg width={p.size ?? 18} height={p.size ?? 18} viewBox="0 0 24 24" fill="currentColor" className={p.className}>

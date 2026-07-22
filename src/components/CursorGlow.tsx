@@ -33,6 +33,12 @@ export default function CursorGlow() {
     }
     raf = requestAnimationFrame(loop)
 
+    const onVis = () => {
+      if (document.hidden) cancelAnimationFrame(raf)
+      else raf = requestAnimationFrame(loop)
+    }
+    document.addEventListener('visibilitychange', onVis)
+
     window.addEventListener('mousemove', onMove, { passive: true })
     window.addEventListener('touchstart', onTouchStart, { passive: true })
     window.addEventListener('touchmove', onTouchMove, { passive: true })
@@ -47,6 +53,7 @@ export default function CursorGlow() {
       window.removeEventListener('touchend', onTouchEnd)
       document.removeEventListener('mouseleave', onLeave)
       document.removeEventListener('mouseenter', onEnter)
+      document.removeEventListener('visibilitychange', onVis)
     }
   }, [])
 
