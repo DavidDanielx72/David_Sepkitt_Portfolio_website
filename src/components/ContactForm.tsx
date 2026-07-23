@@ -49,7 +49,7 @@ export default function ContactForm() {
   return (
     <form className="contact-form" onSubmit={submit}>
       <h3>Send me a message</h3>
-      <p className="form-sub">I’ll get back to you at the email you provide.</p>
+      <p className="form-sub">I'll get back to you at the email you provide.</p>
 
       <div className="form-row">
         <div className="field">
@@ -72,7 +72,7 @@ export default function ContactForm() {
       </button>
 
       {status === 'ok' && (
-        <div className="form-status ok">Thanks — your message has been sent. I’ll be in touch soon.</div>
+        <div className="form-status ok">Thanks — your message has been sent. I'll be in touch soon.</div>
       )}
       {status === 'err' && (
         <div className="form-status err">{error || 'Could not send your message. Please try again.'}</div>

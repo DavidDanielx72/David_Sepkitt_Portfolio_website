@@ -1,5 +1,6 @@
 import { carouselTech } from '../data/portfolio'
 
+/** CSS-driven infinite marquee — zero JS animation, GPU-accelerated transform. */
 export default function TechCarousel() {
   const items = [...carouselTech, ...carouselTech]
   return (
