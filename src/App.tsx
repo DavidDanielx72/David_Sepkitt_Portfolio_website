@@ -86,14 +86,21 @@ export default function App() {
   const onCardMove = (e: React.MouseEvent<HTMLElement>) => {
     const el = e.currentTarget
     const rect = el.getBoundingClientRect()
-    const mx = ((e.clientX - rect.left) / rect.width) * 100
-    const my = ((e.clientY - rect.top) / rect.height) * 100
-    el.style.setProperty('--mx', `${mx}%`)
-    el.style.setProperty('--my', `${my}%`)
+    const px = (e.clientX - rect.left) / rect.width
+    const py = (e.clientY - rect.top) / rect.height
+    el.style.setProperty('--mx', `${px * 100}%`)
+    el.style.setProperty('--my', `${py * 100}%`)
+    if (el.classList.contains('project-card')) {
+      el.style.setProperty('--rx', `${(py - 0.5) * -10}deg`)
+      el.style.setProperty('--ry', `${(px - 0.5) * 10}deg`)
+    }
   }
   const onCardLeave = (e: React.MouseEvent<HTMLElement>) => {
-    e.currentTarget.style.setProperty('--mx', '50%')
-    e.currentTarget.style.setProperty('--my', '0%')
+    const el = e.currentTarget
+    el.style.setProperty('--mx', '50%')
+    el.style.setProperty('--my', '0%')
+    el.style.setProperty('--rx', '0deg')
+    el.style.setProperty('--ry', '0deg')
   }
   const cardMouseProps = isTouch ? {} : { onMouseMove: onCardMove, onMouseLeave: onCardLeave }
 
@@ -184,7 +191,7 @@ export default function App() {
           </div>
 
           <div className="split-grid">
-            <div className="about-card reveal">
+            <div className="about-card reveal" {...cardMouseProps}>
               <h3>Personal details</h3>
               <div className="meta">
                 <span className="chip"><MapPin size={12} /> {personal.location}</span>
@@ -203,7 +210,8 @@ export default function App() {
               {skills.map((s, i) => {
                 const Icon = ICONS[s.icon]
                 return (
-                  <div className="skill-card reveal" key={s.title} style={{ '--i': i } as React.CSSProperties}>
+                  <div className="skill-card reveal" key={s.title} style={{ '--i': i } as React.CSSProperties} {...cardMouseProps}>
+                    <div className="spotlight" aria-hidden="true" />
                     <div className="sk-head">
                       {Icon && <div className="ico"><Icon size={18} /></div>}
                       <h4>{s.title}</h4>
@@ -293,7 +301,7 @@ export default function App() {
             <div className="reveal">
               <div className="edu-stack">
                 {education.map((e) => (
-                  <div className="edu-card" key={e.title}>
+                  <div className="edu-card" key={e.title} {...cardMouseProps}>
                     <div className="yr"><GraduationCap size={13} /> {e.year}</div>
                     <h4>{e.title}</h4>
                     <div className="org">{e.org}</div>
@@ -317,7 +325,7 @@ export default function App() {
           </div>
 
           <div className="contact-wrap">
-            <div className="contact-info reveal">
+            <div className="contact-info reveal" {...cardMouseProps}>
               <div>
                 <h2>Get in touch</h2>
                 <p>Prefer email or socials? Reach me directly through any of these.</p>
