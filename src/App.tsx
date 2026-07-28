@@ -131,7 +131,7 @@ export default function App() {
           <div className="hero-inner reveal">
             <span className="hero-eyebrow"><span className="pulse" /> ICT Application Development Student</span>
             <h1>
-              Hi, I'm David Sepkitt.
+              Hi, I’m David Sepkitt.
               <span className="accent">Aspiring Full Stack Developer</span>
             </h1>
             <p className="hero-lead">
@@ -155,7 +155,7 @@ export default function App() {
 
       <section id="about">
         <div className="container">
-          <div className="section-head reveal">
+          <div className="reveal">
             <span className="section-tag">About &amp; Skills</span>
             <h2 className="section-title">A developer who turns ideas into <span className="accent-text">working software</span></h2>
             <p className="section-sub">
@@ -204,9 +204,9 @@ export default function App() {
 
       <section id="projects">
         <div className="container">
-          <div className="section-head reveal">
+          <div className="reveal">
             <span className="section-tag">Selected work</span>
-            <h2 className="section-title">Projects I've <span className="accent-text">built</span></h2>
+            <h2 className="section-title">Projects I’ve <span className="accent-text">built</span></h2>
             <p className="section-sub">
               From AI assistants to IoT hardware — each project links to its source on GitHub.
             </p>
@@ -250,9 +250,9 @@ export default function App() {
 
       <section id="experience">
         <div className="container">
-          <div className="section-head reveal">
+          <div className="reveal">
             <span className="section-tag">Experience &amp; Education</span>
-            <h2 className="section-title">Where I've <span className="accent-text">contributed &amp; studied</span></h2>
+            <h2 className="section-title">Where I’ve <span className="accent-text">contributed &amp; studied</span></h2>
             <p className="section-sub">
               Roles across web, retail, and events — each one sharpening communication, teamwork,
               and calm-under-pressure delivery.
@@ -260,24 +260,20 @@ export default function App() {
           </div>
 
           <div className="explore-grid">
-            <div className="reveal">
-              <h3 className="col-title" style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', fontWeight: 600, marginBottom: 20, color: 'var(--accent)' }}>Experience</h3>
-              <div className="timeline">
-                {experience.map((e) => (
-                  <div className="tl-item" key={e.role}>
-                    <div className="tl-date">{e.date}</div>
-                    <h4>{e.role}</h4>
-                    <div className="tl-org">{e.org}</div>
-                    <ul>
-                      {e.points.map((pt, i) => <li key={i}>{pt}</li>)}
-                    </ul>
-                  </div>
-                ))}
-              </div>
+            <div className="timeline reveal">
+              {experience.map((e) => (
+                <div className="tl-item" key={e.role}>
+                  <div className="tl-date">{e.date}</div>
+                  <h4>{e.role}</h4>
+                  <div className="tl-org">{e.org}</div>
+                  <ul>
+                    {e.points.map((pt, i) => <li key={i}>{pt}</li>)}
+                  </ul>
+                </div>
+              ))}
             </div>
 
             <div className="reveal">
-              <h3 className="col-title" style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', fontWeight: 600, marginBottom: 20, color: 'var(--accent)' }}>Education</h3>
               <div className="edu-stack">
                 {education.map((e) => (
                   <div className="edu-card" key={e.title}>
@@ -294,9 +290,9 @@ export default function App() {
 
       <section id="contact">
         <div className="container">
-          <div className="section-head reveal">
+          <div className="reveal">
             <span className="section-tag">Contact</span>
-            <h2 className="section-title">Let's build something <span className="accent-text">together</span></h2>
+            <h2 className="section-title">Let’s build something <span className="accent-text">together</span></h2>
             <p className="section-sub">
               Open to junior developer roles, internships, and freelance web work. Send a message
               below — it lands directly in my inbox.
@@ -326,11 +322,6 @@ export default function App() {
                     <span>Cape Town, Western Cape</span>
                   </div>
                 </div>
-              </div>
-              <div className="socials">
-                <a href={links.github} target="_blank" rel="noreferrer" className="social-btn" aria-label="GitHub"><Github size={16} /></a>
-                <a href={links.linkedin} target="_blank" rel="noreferrer" className="social-btn" aria-label="LinkedIn"><Linkedin size={16} /></a>
-                <a href={links.email} className="social-btn" aria-label="Email"><Mail size={16} /></a>
               </div>
             </div>
 

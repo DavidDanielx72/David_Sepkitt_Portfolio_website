@@ -13,7 +13,7 @@ export const carouselTech = [
   { label: 'TypeScript', group: 'Programming' },
   { label: 'HTML5', group: 'Programming' },
   { label: 'CSS3', group: 'Programming' },
-  { label: 'C++ (Basic)', group: 'Programming' },
+  { label: 'C++', group: 'Programming' },
   { label: 'React', group: 'Frameworks & Tools' },
   { label: 'WordPress', group: 'Frameworks & Tools' },
   { label: 'GitHub', group: 'Frameworks & Tools' },
@@ -37,7 +37,7 @@ export const skills = [
   { icon: 'code', title: 'Programming', desc: 'Clean, efficient code across multiple languages and paradigms.', tags: ['Java', 'JavaScript', 'TypeScript', 'HTML5', 'CSS3', 'C++ (Basic)'] },
   { icon: 'layers', title: 'Frameworks & Tools', desc: 'Component-driven interfaces and source control.', tags: ['React', 'WordPress', 'GitHub', 'Visual Studio Code', 'IntelliJ IDEA', 'Figma'] },
   { icon: 'database', title: 'Data & Backend', desc: 'Schema design and database integration for app data.', tags: ['SQL', 'Supabase', 'Database Design'] },
-  { icon: 'brain', title: 'Soft Skills', desc: '', tags: ['Problem-solving', 'Teamwork', 'Adaptability', 'Attention to Detail'] },
+  { icon: 'brain', title: 'Soft Skills', desc: 'Collaboration and continuous learning.', tags: ['Problem-solving', 'Teamwork', 'Adaptability', 'Attention to Detail'] },
 ]
 
 export const projects = [
