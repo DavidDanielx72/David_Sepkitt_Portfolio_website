@@ -4,16 +4,17 @@ import AmbientParticles from './components/AmbientParticles'
 import TechCarousel from './components/TechCarousel'
 import {
   ArrowUpRight, Mail, Github, Linkedin, Code, Layers, Database, Brain,
-  Sparkles, Cpu, Globe, GraduationCap, MapPin, ArrowRight,
+  Sparkles, Cpu, Globe, MapPin, ArrowRight,
 } from './components/Icons'
 import { useReveal } from './hooks/useReveal'
-import { projects, skills, experience, education, personal, links } from './data/portfolio'
+import { projects, skills, experience, education, personal, interests, links } from './data/portfolio'
 
 const ContactForm = lazy(() => import('./components/ContactForm'))
 
 const NAV_ITEMS = ['about', 'projects', 'experience', 'contact']
 const ICONS: Record<string, (p: { size?: number }) => JSX.Element> = {
-  Code, Layers, Database, Brain, Cpu, Sparkles, Globe,
+  code: Code, layers: Layers, database: Database, brain: Brain,
+  sparkles: Sparkles, cpu: Cpu, globe: Globe,
 }
 
 export default function App() {
@@ -25,7 +26,6 @@ export default function App() {
   const indicatorRef = useRef<HTMLDivElement>(null)
   const linksRef = useRef<Record<string, HTMLAnchorElement | null>>({})
 
-  // single scroll listener — passive, batched state
   useEffect(() => {
     let ticking = false
     const onScroll = () => {
@@ -43,7 +43,6 @@ export default function App() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // scroll spy — only observe sections below hero
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -60,7 +59,6 @@ export default function App() {
     return () => observer.disconnect()
   }, [])
 
-  // position the animated underline indicator
   useEffect(() => {
     const indicator = indicatorRef.current
     const show = pastHero && active
@@ -85,7 +83,14 @@ export default function App() {
     <>
       <CursorGlow />
       <AmbientParticles />
+      <div className="bg-canvas" aria-hidden="true" />
       <div className="bg-aurora" aria-hidden="true" />
+      <div className="bg-grid" aria-hidden="true" />
+      <div className="bg-blobs" aria-hidden="true">
+        <div className="blob b1" />
+        <div className="blob b2" />
+        <div className="blob b3" />
+      </div>
 
       <nav className={navClass}>
         <a href="#top" className="nav-brand">DS.</a>
@@ -135,8 +140,8 @@ export default function App() {
       <section id="about">
         <div className="container">
           <div className="section-head reveal">
-            <span className="section-label">01 — About &amp; Skills</span>
-            <h2 className="section-title">A developer who turns ideas into working software</h2>
+            <span className="section-tag">About &amp; Skills</span>
+            <h2 className="section-title">A developer who turns ideas into <span className="accent-text">working software</span></h2>
             <p className="section-sub">
               Application Development student at CPUT with a passion for practical, user-focused
               solutions, a strong work ethic, and the ability to collaborate while writing clean,
@@ -146,10 +151,10 @@ export default function App() {
 
           <div className="split-grid">
             <div className="about-card reveal">
-              <h3 className="card-title">Who I am</h3>
+              <h3>Who I am</h3>
               <p>
                 I'm {personal.age}, based in {personal.location}, and currently studying for a
-                Diploma in ICT: Application Development at CPUT. I'm passionate about building
+                Diploma in ICT — Applications Development at CPUT. I'm passionate about building
                 software that solves real problems — whether that's a responsive web app, a Java
                 desktop tool, or a database-backed service.
               </p>
@@ -158,21 +163,36 @@ export default function App() {
                 learn. I'm looking for my first full-time role as a Full Stack Developer where I
                 can contribute, grow, and help build the technologies of the future.
               </p>
-              <div className="about-meta">
-                <span><MapPin size={13} /> {personal.location}</span>
-                <span>Languages: {personal.languages}</span>
-                <span>{personal.license}</span>
+
+              <div className="sub-title">Personal details</div>
+              <div className="meta">
+                <span className="mi"><span className="dot" /> {personal.age}</span>
+                <span className="mi"><span className="dot" /> {personal.location}</span>
+                <span className="mi"><span className="dot" /> Languages: {personal.languages}</span>
+                <span className="mi"><span className="dot" /> {personal.license}</span>
+              </div>
+
+              <div className="sub-title">Interests</div>
+              <div className="meta" style={{ flexDirection: 'row', flexWrap: 'wrap', gap: '8px' }}>
+                {interests.map((i) => (
+                  <span className="chip" key={i}>{i}</span>
+                ))}
               </div>
             </div>
 
-            <div className="skills-grid reveal">
+            <div className="skills-stack reveal">
               {skills.map((s) => {
                 const Icon = ICONS[s.icon]
                 return (
                   <div className="skill-card" key={s.title}>
-                    <div className="skill-ico">{Icon && <Icon size={18} />}</div>
-                    <h4>{s.title}</h4>
-                    <p>{s.desc}</p>
+                    <div className="sk-head">
+                      {Icon && <div className="sk-ico"><Icon size={18} /></div>}
+                      <h4>{s.title}</h4>
+                    </div>
+                    {s.desc && <p>{s.desc}</p>}
+                    <div className="skill-tags">
+                      {s.tags.map((t) => <span className="tag" key={t}>{t}</span>)}
+                    </div>
                   </div>
                 )
               })}
@@ -185,27 +205,32 @@ export default function App() {
       <section id="projects">
         <div className="container">
           <div className="section-head reveal">
-            <span className="section-label">02 — Selected Work</span>
-            <h2 className="section-title">Projects I've built</h2>
+            <span className="section-tag">Selected work</span>
+            <h2 className="section-title">Projects I've <span className="accent-text">built</span></h2>
             <p className="section-sub">
-              A selection of work spanning web development, Java applications, WordPress, and
-              UI/UX design — each chosen to show a different facet of my skill set.
+              From AI assistants to IoT hardware — each project links to its source on GitHub.
             </p>
           </div>
 
           <div className="projects-grid">
             {projects.map((p) => {
               const Icon = ICONS[p.icon]
+              const isSite = p.link.includes('rietfontein')
               return (
-                <article className="project-card reveal" key={p.title}>
-                  <div className="pc-icon">{Icon && <Icon size={20} />}</div>
-                  <h3>{p.title}</h3>
-                  <p>{p.desc}</p>
-                  <div className="pc-tags">
-                    {p.tags.map((t) => <span className="tag" key={t}>{t}</span>)}
+                <article className="project-card reveal" key={p.id}>
+                  <div className="pc-head">
+                    <div className="pc-icon">{Icon && <Icon size={20} />}</div>
+                    <div>
+                      <h3>{p.title}</h3>
+                      <span className="pc-tag">{p.tag}</span>
+                    </div>
+                  </div>
+                  <p className="pc-desc">{p.desc}</p>
+                  <div className="pc-stack">
+                    {p.stack.map((t) => <span className="tag" key={t}>{t}</span>)}
                   </div>
                   <a href={p.link} target="_blank" rel="noreferrer" className="pc-link">
-                    View on GitHub <ArrowUpRight size={13} />
+                    {isSite ? 'Visit site' : 'View on GitHub'} <ArrowUpRight size={13} />
                   </a>
                 </article>
               )
@@ -224,24 +249,25 @@ export default function App() {
       <section id="experience">
         <div className="container">
           <div className="section-head reveal">
-            <span className="section-label">03 — Experience &amp; Education</span>
-            <h2 className="section-title">Where I've worked and studied</h2>
+            <span className="section-tag">Experience &amp; Education</span>
+            <h2 className="section-title">Where I've <span className="accent-text">contributed &amp; studied</span></h2>
             <p className="section-sub">
-              A combination of hands-on work experience and formal education that has shaped
-              my approach to software development.
+              Roles across web, retail, and events — each one sharpening communication, teamwork,
+              and calm-under-pressure delivery.
             </p>
           </div>
 
           <div className="explore-grid">
             <div className="reveal">
               <h3 className="col-title">Experience</h3>
-              <div className="exp-stack">
+              <div className="timeline">
                 {experience.map((e) => (
-                  <div className="exp-card" key={e.role}>
-                    <div className="yr">{e.period}</div>
+                  <div className="tl-item" key={e.role}>
+                    <div className="tl-date">{e.period}</div>
                     <h4>{e.role}</h4>
-                    <div className="org">{e.org}</div>
+                    <div className="tl-org">{e.org}</div>
                     <p>{e.desc}</p>
+                    <p>{e.desc2}</p>
                   </div>
                 ))}
               </div>
@@ -252,7 +278,7 @@ export default function App() {
               <div className="edu-stack">
                 {education.map((e) => (
                   <div className="edu-card" key={e.title}>
-                    <div className="yr"><GraduationCap size={13} /> {e.year}</div>
+                    <div className="yr">{e.year}</div>
                     <h4>{e.title}</h4>
                     <div className="org">{e.org}</div>
                   </div>
@@ -267,12 +293,11 @@ export default function App() {
       <section id="contact">
         <div className="container">
           <div className="section-head reveal">
-            <span className="section-label">04 — Contact</span>
-            <h2 className="section-title">Let's build something together</h2>
+            <span className="section-tag">Contact</span>
+            <h2 className="section-title">Let's build something <span className="accent-text">together</span></h2>
             <p className="section-sub">
-              I'm actively looking for full-time Full Stack Developer roles and open to freelance
-              work. Whether you have a role, a project, or just want to connect — I'd love to hear
-              from you.
+              Open to junior developer roles, internships, and freelance web work. Send a message
+              below — it lands directly in my inbox.
             </p>
           </div>
 
