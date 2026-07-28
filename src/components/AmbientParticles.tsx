@@ -12,19 +12,19 @@ export default function AmbientParticles() {
   useEffect(() => {
     const canvas = ref.current
     if (!canvas) return
-    const ctx = canvas.getContext('2d', { alpha: true })
+    const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true })
     if (!ctx) return
 
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const isMobile = window.innerWidth < 768
+    const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches
     let w = window.innerWidth
     let h = window.innerHeight
-    let dpr = Math.min(window.devicePixelRatio || 1, 2)
+    let dpr = Math.min(window.devicePixelRatio || 1, isTouch ? 1.5 : 2)
 
     const resize = () => {
       w = window.innerWidth
       h = window.innerHeight
-      dpr = Math.min(window.devicePixelRatio || 1, 2)
+      dpr = Math.min(window.devicePixelRatio || 1, isTouch ? 1.5 : 2)
       canvas.width = w * dpr
       canvas.height = h * dpr
       canvas.style.width = w + 'px'
@@ -33,7 +33,9 @@ export default function AmbientParticles() {
     }
     resize()
 
-    const count = Math.min(Math.floor((w * h) / (isMobile ? 42000 : 22000)), isMobile ? 36 : 72)
+    const density = isTouch ? 56000 : 22000
+    const cap = isTouch ? 28 : 72
+    const count = Math.min(Math.floor((w * h) / density), cap)
     const particles: Particle[] = []
     for (let i = 0; i < count; i++) {
       particles.push({
@@ -61,6 +63,12 @@ export default function AmbientParticles() {
     const onMouseMove = (e: MouseEvent) => { mx = e.clientX; my = e.clientY }
     const onTouchMove = (e: TouchEvent) => {
       if (e.touches[0]) { mx = e.touches[0].clientX; my = e.touches[0].clientY }
+    }
+
+    let resizeTimer = 0
+    const debouncedResize = () => {
+      clearTimeout(resizeTimer)
+      resizeTimer = window.setTimeout(resize, 150)
     }
 
     const render = () => {
@@ -124,17 +132,20 @@ export default function AmbientParticles() {
       }
     }
 
-    window.addEventListener('mousemove', onMouseMove, { passive: true })
+    if (!isTouch) {
+      window.addEventListener('mousemove', onMouseMove, { passive: true })
+    }
     window.addEventListener('touchmove', onTouchMove, { passive: true })
-    window.addEventListener('resize', resize)
+    window.addEventListener('resize', debouncedResize)
     document.addEventListener('visibilitychange', onVis)
 
     return () => {
       running = false
       cancelAnimationFrame(raf)
+      clearTimeout(resizeTimer)
       window.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('touchmove', onTouchMove)
-      window.removeEventListener('resize', resize)
+      window.removeEventListener('resize', debouncedResize)
       document.removeEventListener('visibilitychange', onVis)
     }
   }, [])

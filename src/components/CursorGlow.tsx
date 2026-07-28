@@ -6,55 +6,66 @@ export default function CursorGlow() {
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      el.style.display = 'none'
+      return
+    }
 
     let raf = 0
     let tx = window.innerWidth / 2
     let ty = window.innerHeight / 2
     let cx = tx
     let cy = ty
+    let idleTimer = 0
+
+    const stopLoop = () => {
+      cancelAnimationFrame(raf)
+      raf = 0
+    }
+
+    const loop = () => {
+      const dx = tx - cx
+      const dy = ty - cy
+      cx += dx * 0.14
+      cy += dy * 0.14
+      el.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`
+      if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) {
+        stopLoop()
+        return
+      }
+      raf = requestAnimationFrame(loop)
+    }
+
+    const startLoop = () => {
+      if (raf) return
+      clearTimeout(idleTimer)
+      raf = requestAnimationFrame(loop)
+    }
 
     const onMouseMove = (e: MouseEvent) => {
       tx = e.clientX
       ty = e.clientY
-    }
-    const onTouchStart = (e: TouchEvent) => {
-      if (e.touches[0]) { tx = e.touches[0].clientX; ty = e.touches[0].clientY; el.style.opacity = '1' }
-    }
-    const onTouchMove = (e: TouchEvent) => {
-      if (e.touches[0]) { tx = e.touches[0].clientX; ty = e.touches[0].clientY; el.style.opacity = '1' }
+      startLoop()
     }
     const onTouchEnd = () => { el.style.opacity = '0' }
-    const onMouseLeave = () => { el.style.opacity = '0' }
+    const onMouseLeave = () => { el.style.opacity = '0'; stopLoop() }
     const onMouseEnter = () => { el.style.opacity = '1' }
 
-    const loop = () => {
-      cx += (tx - cx) * 0.14
-      cy += (ty - cy) * 0.14
-      el.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`
-      raf = requestAnimationFrame(loop)
-    }
-    raf = requestAnimationFrame(loop)
-
     const onVis = () => {
-      if (document.hidden) cancelAnimationFrame(raf)
-      else raf = requestAnimationFrame(loop)
+      if (document.hidden) stopLoop()
     }
 
     document.addEventListener('visibilitychange', onVis)
     window.addEventListener('mousemove', onMouseMove, { passive: true })
-    window.addEventListener('touchstart', onTouchStart, { passive: true })
-    window.addEventListener('touchmove', onTouchMove, { passive: true })
     window.addEventListener('touchend', onTouchEnd, { passive: true })
     document.addEventListener('mouseleave', onMouseLeave)
     document.addEventListener('mouseenter', onMouseEnter)
 
     return () => {
-      cancelAnimationFrame(raf)
+      stopLoop()
+      clearTimeout(idleTimer)
       document.removeEventListener('visibilitychange', onVis)
       window.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('touchstart', onTouchStart)
-      window.removeEventListener('touchmove', onTouchMove)
       window.removeEventListener('touchend', onTouchEnd)
       document.removeEventListener('mouseleave', onMouseLeave)
       document.removeEventListener('mouseenter', onMouseEnter)

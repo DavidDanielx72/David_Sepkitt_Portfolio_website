@@ -4,8 +4,10 @@ import AmbientParticles from './components/AmbientParticles'
 import TechCarousel from './components/TechCarousel'
 import {
   ArrowUpRight, Mail, Github, Linkedin, Code, Layers, Database, Brain,
-  Sparkles, Cpu, Globe, MapPin, Languages, GraduationCap, ArrowRight,
+  Sparkles, Globe, MapPin, Languages, GraduationCap, ArrowRight,
 } from './components/Icons'
+
+const isTouch = typeof window !== 'undefined' && window.matchMedia('(hover: none) and (pointer: coarse)').matches
 import { useReveal } from './hooks/useReveal'
 import { projects, skills, experience, education, personal, interests, links } from './data/portfolio'
 
@@ -14,7 +16,7 @@ const ContactForm = lazy(() => import('./components/ContactForm'))
 const NAV_ITEMS = ['about', 'projects', 'experience', 'contact']
 const ICONS: Record<string, (p: { size?: number }) => JSX.Element> = {
   code: Code, layers: Layers, database: Database, brain: Brain,
-  sparkles: Sparkles, cpu: Cpu, globe: Globe,
+  sparkles: Sparkles, globe: Globe,
 }
 
 export default function App() {
@@ -89,6 +91,7 @@ export default function App() {
     e.currentTarget.style.setProperty('--mx', '50%')
     e.currentTarget.style.setProperty('--my', '0%')
   }
+  const cardMouseProps = isTouch ? {} : { onMouseMove: onCardMove, onMouseLeave: onCardLeave }
 
   return (
     <>
@@ -220,8 +223,7 @@ export default function App() {
                   className="project-card reveal"
                   key={p.id}
                   style={{ '--i': i } as React.CSSProperties}
-                  onMouseMove={onCardMove}
-                  onMouseLeave={onCardLeave}
+                  {...cardMouseProps}
                 >
                   <div className="pc-head">
                     <div className="pc-icon">{Icon && <Icon size={20} />}</div>
