@@ -4,7 +4,7 @@ import AmbientParticles from './components/AmbientParticles'
 import TechCarousel from './components/TechCarousel'
 import {
   ArrowUpRight, Mail, Github, Linkedin, Code, Layers, Database, Brain,
-  Sparkles, Cpu, Globe, MapPin, ArrowRight,
+  Sparkles, Cpu, Globe, MapPin, Languages, GraduationCap, ArrowRight,
 } from './components/Icons'
 import { useReveal } from './hooks/useReveal'
 import { projects, skills, experience, education, personal, interests, links } from './data/portfolio'
@@ -21,7 +21,7 @@ export default function App() {
   useReveal()
 
   const [scrolled, setScrolled] = useState(false)
-  const [pastHero, setPastHero] = useState(false)
+  const [hovered, setHovered] = useState(false)
   const [active, setActive] = useState('')
   const indicatorRef = useRef<HTMLDivElement>(null)
   const linksRef = useRef<Record<string, HTMLAnchorElement | null>>({})
@@ -32,9 +32,7 @@ export default function App() {
       if (ticking) return
       ticking = true
       requestAnimationFrame(() => {
-        const y = window.scrollY
-        setScrolled(y > 40)
-        setPastHero(y > window.innerHeight * 0.45)
+        setScrolled(window.scrollY > 40)
         ticking = false
       })
     }
@@ -61,7 +59,7 @@ export default function App() {
 
   useEffect(() => {
     const indicator = indicatorRef.current
-    const show = pastHero && active
+    const show = scrolled && active
     if (!show) {
       if (indicator) indicator.classList.remove('visible')
       return
@@ -75,9 +73,22 @@ export default function App() {
     indicator.style.width = `${er.width}px`
     indicator.style.transform = `translateX(${er.left - pr.left}px)`
     indicator.classList.add('visible')
-  }, [active, pastHero])
+  }, [active, scrolled])
 
-  const navClass = ['nav', scrolled && 'scrolled'].filter(Boolean).join(' ')
+  const navClass = ['nav', scrolled && 'scrolled', hovered && 'hovered'].filter(Boolean).join(' ')
+
+  const onCardMove = (e: React.MouseEvent<HTMLElement>) => {
+    const el = e.currentTarget
+    const rect = el.getBoundingClientRect()
+    const mx = ((e.clientX - rect.left) / rect.width) * 100
+    const my = ((e.clientY - rect.top) / rect.height) * 100
+    el.style.setProperty('--mx', `${mx}%`)
+    el.style.setProperty('--my', `${my}%`)
+  }
+  const onCardLeave = (e: React.MouseEvent<HTMLElement>) => {
+    e.currentTarget.style.setProperty('--mx', '50%')
+    e.currentTarget.style.setProperty('--my', '0%')
+  }
 
   return (
     <>
@@ -92,8 +103,14 @@ export default function App() {
         <div className="blob b3" />
       </div>
 
-      <nav className={navClass}>
-        <a href="#top" className="nav-brand">DS.</a>
+      <nav
+        className={navClass}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        <a href="#home" className="nav-brand">
+          <span className="dot" /> David Sepkitt
+        </a>
         <div className="nav-links">
           <div className="nav-indicator" ref={indicatorRef} />
           {NAV_ITEMS.map((id) => (
@@ -101,7 +118,7 @@ export default function App() {
               key={id}
               href={`#${id}`}
               ref={(el) => { linksRef.current[id] = el }}
-              className={`link${id === 'contact' ? ' nav-cta' : ''}${pastHero && active === id ? ' active' : ''}`}
+              className={`link${id === 'contact' ? ' nav-cta' : ''}${scrolled && active === id ? ' active' : ''}`}
             >
               {id.charAt(0).toUpperCase() + id.slice(1)}
             </a>
@@ -109,7 +126,7 @@ export default function App() {
         </div>
       </nav>
 
-      <header className="hero" id="top">
+      <header className="hero" id="home">
         <div className="container">
           <div className="hero-inner reveal">
             <span className="hero-eyebrow"><span className="pulse" /> ICT Application Development Student</span>
@@ -136,7 +153,6 @@ export default function App() {
         </div>
       </header>
 
-      {/* ---------- About & Skills ---------- */}
       <section id="about">
         <div className="container">
           <div className="section-head reveal">
@@ -151,47 +167,32 @@ export default function App() {
 
           <div className="split-grid">
             <div className="about-card reveal">
-              <h3>Who I am</h3>
-              <p>
-                I'm {personal.age}, based in {personal.location}, and currently studying for a
-                Diploma in ICT — Applications Development at CPUT. I'm passionate about building
-                software that solves real problems — whether that's a responsive web app, a Java
-                desktop tool, or a database-backed service.
-              </p>
-              <p>
-                I believe great software comes from curiosity, discipline, and a willingness to
-                learn. I'm looking for my first full-time role as a Full Stack Developer where I
-                can contribute, grow, and help build the technologies of the future.
-              </p>
-
-              <div className="sub-title">Personal details</div>
+              <h3>Personal details</h3>
               <div className="meta">
-                <span className="mi"><span className="dot" /> {personal.age}</span>
-                <span className="mi"><span className="dot" /> {personal.location}</span>
-                <span className="mi"><span className="dot" /> Languages: {personal.languages}</span>
-                <span className="mi"><span className="dot" /> {personal.license}</span>
+                <span className="chip"><MapPin size={12} /> {personal.location}</span>
+                <span className="chip">Age: {personal.age}</span>
+                <span className="chip"><Languages size={12} /> {personal.languages}</span>
+                <span className="chip">{personal.license}</span>
               </div>
-
-              <div className="sub-title">Interests</div>
-              <div className="meta" style={{ flexDirection: 'row', flexWrap: 'wrap', gap: '8px' }}>
-                {interests.map((i) => (
-                  <span className="chip" key={i}>{i}</span>
-                ))}
+              <h3 style={{ marginTop: 22 }}>Interests</h3>
+              <p>Exploring emerging technologies — particularly Artificial Intelligence — and the intersection of music and technology.</p>
+              <div className="meta">
+                {interests.map((i) => <span className="chip" key={i}>{i}</span>)}
               </div>
             </div>
 
-            <div className="skills-stack reveal">
-              {skills.map((s) => {
+            <div className="skills-stack">
+              {skills.map((s, i) => {
                 const Icon = ICONS[s.icon]
                 return (
-                  <div className="skill-card" key={s.title}>
+                  <div className="skill-card reveal" key={s.title} style={{ '--i': i } as React.CSSProperties}>
                     <div className="sk-head">
-                      {Icon && <div className="sk-ico"><Icon size={18} /></div>}
+                      {Icon && <div className="ico"><Icon size={18} /></div>}
                       <h4>{s.title}</h4>
                     </div>
                     {s.desc && <p>{s.desc}</p>}
                     <div className="skill-tags">
-                      {s.tags.map((t) => <span className="tag" key={t}>{t}</span>)}
+                      {s.tags.map((t) => <span className="chip" key={t}>{t}</span>)}
                     </div>
                   </div>
                 )
@@ -201,7 +202,6 @@ export default function App() {
         </div>
       </section>
 
-      {/* ---------- Projects ---------- */}
       <section id="projects">
         <div className="container">
           <div className="section-head reveal">
@@ -213,24 +213,27 @@ export default function App() {
           </div>
 
           <div className="projects-grid">
-            {projects.map((p) => {
+            {projects.map((p, i) => {
               const Icon = ICONS[p.icon]
-              const isSite = p.link.includes('rietfontein')
               return (
-                <article className="project-card reveal" key={p.id}>
+                <article
+                  className="project-card reveal"
+                  key={p.id}
+                  style={{ '--i': i } as React.CSSProperties}
+                  onMouseMove={onCardMove}
+                  onMouseLeave={onCardLeave}
+                >
                   <div className="pc-head">
                     <div className="pc-icon">{Icon && <Icon size={20} />}</div>
-                    <div>
-                      <h3>{p.title}</h3>
-                      <span className="pc-tag">{p.tag}</span>
-                    </div>
+                    <span className="pc-tag">{p.tag}</span>
                   </div>
+                  <h3>{p.title}</h3>
                   <p className="pc-desc">{p.desc}</p>
                   <div className="pc-stack">
-                    {p.stack.map((t) => <span className="tag" key={t}>{t}</span>)}
+                    {p.stack.map((t) => <span className="chip" key={t}>{t}</span>)}
                   </div>
                   <a href={p.link} target="_blank" rel="noreferrer" className="pc-link">
-                    {isSite ? 'Visit site' : 'View on GitHub'} <ArrowUpRight size={13} />
+                    {p.id === 'rietfontein' ? 'Visit site' : 'View on GitHub'} <ArrowUpRight size={13} />
                   </a>
                 </article>
               )
@@ -245,7 +248,6 @@ export default function App() {
         </div>
       </section>
 
-      {/* ---------- Experience & Education ---------- */}
       <section id="experience">
         <div className="container">
           <div className="section-head reveal">
@@ -259,26 +261,27 @@ export default function App() {
 
           <div className="explore-grid">
             <div className="reveal">
-              <h3 className="col-title">Experience</h3>
+              <h3 className="col-title" style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', fontWeight: 600, marginBottom: 20, color: 'var(--accent)' }}>Experience</h3>
               <div className="timeline">
                 {experience.map((e) => (
                   <div className="tl-item" key={e.role}>
-                    <div className="tl-date">{e.period}</div>
+                    <div className="tl-date">{e.date}</div>
                     <h4>{e.role}</h4>
                     <div className="tl-org">{e.org}</div>
-                    <p>{e.desc}</p>
-                    <p>{e.desc2}</p>
+                    <ul>
+                      {e.points.map((pt, i) => <li key={i}>{pt}</li>)}
+                    </ul>
                   </div>
                 ))}
               </div>
             </div>
 
             <div className="reveal">
-              <h3 className="col-title">Education</h3>
+              <h3 className="col-title" style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', fontWeight: 600, marginBottom: 20, color: 'var(--accent)' }}>Education</h3>
               <div className="edu-stack">
                 {education.map((e) => (
                   <div className="edu-card" key={e.title}>
-                    <div className="yr">{e.year}</div>
+                    <div className="yr"><GraduationCap size={13} /> {e.year}</div>
                     <h4>{e.title}</h4>
                     <div className="org">{e.org}</div>
                   </div>
@@ -289,7 +292,6 @@ export default function App() {
         </div>
       </section>
 
-      {/* ---------- Contact ---------- */}
       <section id="contact">
         <div className="container">
           <div className="section-head reveal">
@@ -303,29 +305,36 @@ export default function App() {
 
           <div className="contact-wrap">
             <div className="contact-info reveal">
-              <h2>Get in touch</h2>
-              <p>Prefer email or socials? Reach me directly through any of these.</p>
-              <div className="ci-rows">
-                <a href={links.email} className="ci-row ci-cta">
-                  <div className="ico"><Mail size={16} /></div>
-                  <span>Email Me</span>
-                </a>
-                <a href={links.github} target="_blank" rel="noreferrer" className="ci-row ci-cta">
-                  <div className="ico"><Github size={16} /></div>
-                  <span>Check Out My GitHub</span>
-                </a>
-                <a href={links.linkedin} target="_blank" rel="noreferrer" className="ci-row ci-cta">
-                  <div className="ico"><Linkedin size={16} /></div>
-                  <span>Connect With Me on LinkedIn</span>
-                </a>
-                <div className="ci-row">
-                  <div className="ico"><MapPin size={16} /></div>
-                  <span>Cape Town, Western Cape</span>
+              <div>
+                <h2>Get in touch</h2>
+                <p>Prefer email or socials? Reach me directly through any of these.</p>
+                <div className="ci-rows">
+                  <a href={links.email} className="ci-row ci-cta">
+                    <div className="ico"><Mail size={16} /></div>
+                    <span>Email Me</span>
+                  </a>
+                  <a href={links.github} target="_blank" rel="noreferrer" className="ci-row ci-cta">
+                    <div className="ico"><Github size={16} /></div>
+                    <span>Check Out My GitHub</span>
+                  </a>
+                  <a href={links.linkedin} target="_blank" rel="noreferrer" className="ci-row ci-cta">
+                    <div className="ico"><Linkedin size={16} /></div>
+                    <span>Connect With Me on LinkedIn</span>
+                  </a>
+                  <div className="ci-row">
+                    <div className="ico"><MapPin size={16} /></div>
+                    <span>Cape Town, Western Cape</span>
+                  </div>
                 </div>
+              </div>
+              <div className="socials">
+                <a href={links.github} target="_blank" rel="noreferrer" className="social-btn" aria-label="GitHub"><Github size={16} /></a>
+                <a href={links.linkedin} target="_blank" rel="noreferrer" className="social-btn" aria-label="LinkedIn"><Linkedin size={16} /></a>
+                <a href={links.email} className="social-btn" aria-label="Email"><Mail size={16} /></a>
               </div>
             </div>
 
-            <Suspense fallback={<div className="contact-form reveal"><p>Loading form…</p></div>}>
+            <Suspense fallback={<div className="contact-form reveal"><div className="skeleton" style={{ height: 300 }} /></div>}>
               <ContactForm />
             </Suspense>
           </div>
@@ -334,14 +343,7 @@ export default function App() {
 
       <footer>
         <div className="container">
-          <div className="footer-inner">
-            <span>© {new Date().getFullYear()} David Sepkitt</span>
-            <span className="footer-links">
-              <a href={links.github} target="_blank" rel="noreferrer">GitHub</a>
-              <a href={links.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
-              <a href={links.email}>Email</a>
-            </span>
-          </div>
+          © {new Date().getFullYear()} David Sepkitt — Aspiring Full Stack Software Developer · Cape Town, South Africa
         </div>
       </footer>
     </>

@@ -5,10 +5,7 @@ export const personal = {
   license: "Driver's License: No",
 }
 
-export const interests = [
-  'Artificial Intelligence',
-  'Technology',
-]
+export const interests = ['Artificial Intelligence', 'Music', 'Technology']
 
 export const carouselTech = [
   { label: 'Java', group: 'Programming' },
@@ -47,7 +44,7 @@ export const projects = [
   {
     id: 'careerpilot',
     title: 'CareerPilot AI',
-    tag: 'AI · Full Stack',
+    tag: 'AI \u00b7 Full Stack',
     icon: 'sparkles',
     stack: ['React', 'AI', 'JavaScript', 'Supabase'],
     desc: 'An intelligent AI-powered career assistant that helps users create stronger, more professional CVs. CareerPilot analyses, improves, and generates CV content tailored to today\u2019s job market \u2014 offering personalised suggestions that help any CV stand out.',
@@ -86,23 +83,29 @@ export const experience = [
   {
     role: 'Website Content & Design Updates',
     org: 'Rietfontein Ladismith Guest Farm',
-    period: 'Jan 2026 \u2013 Feb 2026',
-    desc: 'Updated website content, business information, images, and page layouts to keep the site accurate, current, and aligned with the client\u2019s needs.',
-    desc2: 'Improved the website\u2019s structure, usability, and overall presentation while collaborating with the client to support the business\u2019s brand and communication goals.',
+    date: 'Jan 2026 \u2013 Feb 2026',
+    points: [
+      'Updated website content, business information, images, and page layouts to keep the site accurate, current, and aligned with the client\u2019s needs.',
+      'Improved the website\u2019s structure, usability, and overall presentation while collaborating with the client to support the business\u2019s brand and communication goals.',
+    ],
   },
   {
     role: 'Seasonal Sales Consultant',
     org: 'Country Road Waterfront (Woolworths Group)',
-    period: 'Dec 2025 \u2013 Jan 2026',
-    desc: 'Provided customer service in the menswear department, assisting with product enquiries, purchases, and general customer needs.',
-    desc2: 'Maintained stock levels and merchandising standards while supporting daily store operations in a fast-paced retail environment.',
+    date: 'Dec 2025 \u2013 Jan 2026',
+    points: [
+      'Provided customer service in the menswear department, assisting with product enquiries, purchases, and general customer needs.',
+      'Maintained stock levels and merchandising standards while supporting daily store operations in a fast-paced retail environment.',
+    ],
   },
   {
     role: 'Casual Bar Attendant',
     org: 'Cape Town DHL Stadium',
-    period: 'Dec 2023 \u2013 Feb 2024',
-    desc: 'Served beverages and provided customer service during high-volume events, ensuring efficient and professional service.',
-    desc2: 'Assisted with stock replenishment and beverage transport, working accurately and calmly under pressure.',
+    date: 'Dec 2023 \u2013 Feb 2024',
+    points: [
+      'Served beverages and provided customer service during high-volume events, ensuring efficient and professional service.',
+      'Assisted with stock replenishment and beverage transport, working accurately and calmly under pressure.',
+    ],
   },
 ]
 

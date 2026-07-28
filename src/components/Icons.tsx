@@ -1,14 +1,14 @@
 import type { SVGProps } from 'react'
 
 type P = SVGProps<SVGSVGElement> & { size?: number }
-const S = ({ size = 16, ...p }: P) => (
+const S = ({ size = 18, ...p }: P) => (
   <svg
     width={size}
     height={size}
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    strokeWidth={1.7}
+    strokeWidth={1.8}
     strokeLinecap="round"
     strokeLinejoin="round"
     {...p}
@@ -30,4 +30,4 @@ export const Globe = (p: P) => <S {...p}><circle cx="12" cy="12" r="10" /><path 
 export const GraduationCap = (p: P) => <S {...p}><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" /><path d="M22 10v6" /><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5" /></S>
 export const MapPin = (p: P) => <S {...p}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></S>
 export const Languages = (p: P) => <S {...p}><path d="m5 8 6 6" /><path d="m4 14 6-6 2-3" /><path d="M2 5h12" /><path d="M7 2h1" /><path d="m22 22-5-10-5 10" /><path d="M14 18h6" /></S>
-export const Send = (p: P) => <S {...p}><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" /><path d="m21.854 2.147-10.94 10.939" /></S>
+export const Send = (p: P) => <S {...p}><path d="M22 2 11 13" /><path d="M22 2 15 22l-4-9-9-4Z" /></S>
