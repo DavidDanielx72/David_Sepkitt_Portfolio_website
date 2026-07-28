@@ -3,8 +3,11 @@ import { useEffect, useRef } from 'react'
 type Particle = {
   x: number; y: number; vx: number; vy: number; r: number
   baseO: number; tw: number; twSpeed: number
-  phase: number; fade: number; fadeSpeed: number
+  hue: number; fade: number; fadeSpeed: number
 }
+
+const GOLD_R = 244, GOLD_G = 224, GOLD_B = 184
+const GOLD_GLOW_R = 245, GOLD_GLOW_G = 210, GOLD_GLOW_B = 140
 
 export default function AmbientParticles() {
   const ref = useRef<HTMLCanvasElement>(null)
@@ -33,21 +36,22 @@ export default function AmbientParticles() {
     }
     resize()
 
-    const density = isTouch ? 56000 : 22000
-    const cap = isTouch ? 28 : 72
+    const density = isTouch ? 52000 : 19000
+    const cap = isTouch ? 34 : 82
     const count = Math.min(Math.floor((w * h) / density), cap)
     const particles: Particle[] = []
     for (let i = 0; i < count; i++) {
+      const hue = Math.random()
       particles.push({
         x: Math.random() * w,
         y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.16,
-        vy: (Math.random() - 0.5) * 0.16,
-        r: Math.random() * 1.8 + 0.5,
-        baseO: Math.random() * 0.45 + 0.25,
+        vx: (Math.random() - 0.5) * 0.18,
+        vy: (Math.random() - 0.5) * 0.18,
+        r: Math.random() * 2 + 0.5,
+        baseO: Math.random() * 0.5 + 0.3,
         tw: Math.random() * Math.PI * 2,
-        twSpeed: Math.random() * 0.02 + 0.008,
-        phase: Math.random() * Math.PI * 2,
+        twSpeed: Math.random() * 0.025 + 0.01,
+        hue,
         fade: Math.random(),
         fadeSpeed: Math.random() * 0.003 + 0.001,
       })
@@ -93,21 +97,31 @@ export default function AmbientParticles() {
         const dx = p.x - cx
         const dy = p.y - cy
         const dist2 = dx * dx + dy * dy
-        const proximity = dist2 < 50000 ? (1 - dist2 / 50000) * 0.6 : 0
+        const proximity = dist2 < 70000 ? (1 - dist2 / 70000) * 0.8 : 0
         const twinkle = (Math.sin(p.tw) + 1) / 2
-        const opacity = p.baseO * (0.35 + twinkle * 0.65) * p.fade + proximity * 0.3
-        const radius = p.r + proximity * 1.8
+        const opacity = Math.min(p.baseO * (0.4 + twinkle * 0.6) * p.fade + proximity * 0.45, 1)
+        const radius = p.r + proximity * 2.4
+        const glowR = Math.max(radius * 7, 1)
 
-        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius * 6)
-        grad.addColorStop(0, `rgba(232, 201, 138, ${opacity * 0.5})`)
-        grad.addColorStop(0.3, `rgba(212, 181, 118, ${opacity * 0.22})`)
-        grad.addColorStop(1, 'rgba(212, 181, 118, 0)')
+        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR)
+        if (p.hue < 0.22) {
+          grad.addColorStop(0, `rgba(142,245,214,${opacity * 0.55})`)
+          grad.addColorStop(0.3, `rgba(110,231,199,${opacity * 0.24})`)
+          grad.addColorStop(1, 'rgba(110,231,199,0)')
+        } else {
+          grad.addColorStop(0, `rgba(${GOLD_GLOW_R},${GOLD_GLOW_G},${GOLD_GLOW_B},${opacity * 0.58})`)
+          grad.addColorStop(0.3, `rgba(${GOLD_R},${GOLD_G},${GOLD_B},${opacity * 0.26})`)
+          grad.addColorStop(1, 'rgba(212,181,118,0)')
+        }
         ctx.fillStyle = grad
         ctx.beginPath()
-        ctx.arc(p.x, p.y, radius * 6, 0, Math.PI * 2)
+        ctx.arc(p.x, p.y, glowR, 0, Math.PI * 2)
         ctx.fill()
 
-        ctx.fillStyle = `rgba(244, 224, 184, ${opacity * 0.85})`
+        const coreColor = p.hue < 0.22
+          ? `rgba(168,250,228,${opacity * 0.9})`
+          : `rgba(${GOLD_R},${GOLD_G},${GOLD_B},${opacity * 0.92})`
+        ctx.fillStyle = coreColor
         ctx.beginPath()
         ctx.arc(p.x, p.y, radius, 0, Math.PI * 2)
         ctx.fill()
@@ -125,7 +139,7 @@ export default function AmbientParticles() {
       raf = requestAnimationFrame(render)
     } else {
       for (const p of particles) {
-        ctx.fillStyle = `rgba(212, 181, 118, ${p.baseO * 0.5})`
+        ctx.fillStyle = `rgba(212,181,118,${p.baseO * 0.5})`
         ctx.beginPath()
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
         ctx.fill()

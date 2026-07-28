@@ -25,6 +25,7 @@ export default function App() {
   const [scrolled, setScrolled] = useState(false)
   const [hovered, setHovered] = useState(false)
   const [active, setActive] = useState('')
+  const [progress, setProgress] = useState(0)
   const indicatorRef = useRef<HTMLDivElement>(null)
   const linksRef = useRef<Record<string, HTMLAnchorElement | null>>({})
 
@@ -34,7 +35,10 @@ export default function App() {
       if (ticking) return
       ticking = true
       requestAnimationFrame(() => {
-        setScrolled(window.scrollY > 40)
+        const y = window.scrollY
+        setScrolled(y > 40)
+        const max = document.documentElement.scrollHeight - window.innerHeight
+        setProgress(max > 0 ? Math.min(y / max, 1) : 0)
         ticking = false
       })
     }
@@ -97,6 +101,7 @@ export default function App() {
     <>
       <CursorGlow />
       <AmbientParticles />
+      <div className="scroll-progress" style={{ width: `${progress * 100}%` }} aria-hidden="true" />
       <div className="bg-canvas" aria-hidden="true" />
       <div className="bg-aurora" aria-hidden="true" />
       <div className="bg-grid" aria-hidden="true" />
@@ -133,9 +138,15 @@ export default function App() {
         <div className="container">
           <div className="hero-inner reveal">
             <span className="hero-eyebrow"><span className="pulse" /> ICT Application Development Student</span>
-            <h1>
-              Hi, I’m David Sepkitt.
-              <span className="accent">Aspiring Full Stack Developer</span>
+            <h1 className="reveal-words">
+              {"Hi, I’m David Sepkitt.".split(' ').map((w, i) => (
+                <span key={i} style={{ '--wi': i } as React.CSSProperties}>{w}&nbsp;</span>
+              ))}
+              <span className="accent">
+                {"Aspiring Full Stack Developer".split(' ').map((w, i) => (
+                  <span key={i} style={{ '--wi': i + 5 } as React.CSSProperties}>{w}&nbsp;</span>
+                ))}
+              </span>
             </h1>
             <p className="hero-lead">
               I build practical, user-focused solutions and write clean, efficient code.
@@ -153,6 +164,10 @@ export default function App() {
             </div>
           </div>
           <TechCarousel />
+        </div>
+        <div className="scroll-indicator" aria-hidden="true">
+          <div className="mouse" />
+          <span>Scroll</span>
         </div>
       </header>
 
