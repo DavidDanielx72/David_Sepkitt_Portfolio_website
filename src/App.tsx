@@ -1,19 +1,24 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState, useCallback } from 'react'
 import CursorGlow from './components/CursorGlow'
 import AmbientParticles from './components/AmbientParticles'
 import TechCarousel from './components/TechCarousel'
+import Certificates from './components/Certificates'
+import AdminLogin from './components/AdminLogin'
+import ProjectAdmin from './components/ProjectAdmin'
 import {
   ArrowUpRight, ExternalLink, Mail, Github, Linkedin, Code, Layers, Database, Brain,
-  Sparkles, Globe, MapPin, Languages, GraduationCap, ArrowRight,
+  Sparkles, Globe, MapPin, Languages, GraduationCap, ArrowRight, LogOut, Lock,
 } from './components/Icons'
+import { supabase, type Project } from './lib/supabase'
+import { useAuth } from './hooks/useAuth'
 
 const isTouch = typeof window !== 'undefined' && window.matchMedia('(hover: none) and (pointer: coarse)').matches
 import { useReveal } from './hooks/useReveal'
-import { projects, skills, experience, education, personal, interests, links } from './data/portfolio'
+import { skills, experience, education, personal, interests, links } from './data/portfolio'
 
 const ContactForm = lazy(() => import('./components/ContactForm'))
 
-const NAV_ITEMS = ['about', 'projects', 'experience', 'contact']
+const NAV_ITEMS = ['about', 'projects', 'certificates', 'experience', 'contact']
 const ICONS: Record<string, (p: { size?: number }) => JSX.Element> = {
   code: Code, layers: Layers, database: Database, brain: Brain,
   sparkles: Sparkles, globe: Globe,
@@ -21,13 +26,58 @@ const ICONS: Record<string, (p: { size?: number }) => JSX.Element> = {
 
 export default function App() {
   useReveal()
+  const { isAdmin, signOut } = useAuth()
 
   const [scrolled, setScrolled] = useState(false)
   const [hovered, setHovered] = useState(false)
   const [active, setActive] = useState('')
   const [progress, setProgress] = useState(0)
+  const [showLogin, setShowLogin] = useState(false)
+  const [dbProjects, setDbProjects] = useState<Project[]>([])
+  const [projectsLoading, setProjectsLoading] = useState(true)
   const indicatorRef = useRef<HTMLDivElement>(null)
   const linksRef = useRef<Record<string, HTMLAnchorElement | null>>({})
+
+  const loadProjects = useCallback(async () => {
+    setProjectsLoading(true)
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .order('sort_order', { ascending: true })
+    if (!error && data) setDbProjects(data)
+    setProjectsLoading(false)
+  }, [])
+
+  useEffect(() => { loadProjects() }, [loadProjects])
+
+  const handleAddProject = async (p: { title: string; tag: string; icon: string; stack: string[]; description: string; link: string; demo: string }) => {
+    const { error } = await supabase.from('projects').insert({
+      ...p,
+      tag: p.tag || null,
+      demo: p.demo || null,
+      stack: p.stack,
+      sort_order: dbProjects.length,
+    })
+    if (error) throw new Error('Could not add project.')
+    await loadProjects()
+  }
+
+  const handleUpdateProject = async (id: string, p: { title: string; tag: string; icon: string; stack: string[]; description: string; link: string; demo: string }) => {
+    const { error } = await supabase.from('projects').update({
+      ...p,
+      tag: p.tag || null,
+      demo: p.demo || null,
+      stack: p.stack,
+    }).eq('id', id)
+    if (error) throw new Error('Could not update project.')
+    await loadProjects()
+  }
+
+  const handleDeleteProject = async (id: string) => {
+    const { error } = await supabase.from('projects').delete().eq('id', id)
+    if (error) throw new Error('Could not delete project.')
+    await loadProjects()
+  }
 
   useEffect(() => {
     let ticking = false
@@ -138,8 +188,21 @@ export default function App() {
               {id.charAt(0).toUpperCase() + id.slice(1)}
             </a>
           ))}
+          {isAdmin ? (
+            <button className="link nav-admin-btn" onClick={signOut} title="Sign out">
+              <LogOut size={13} /> Admin
+            </button>
+          ) : (
+            <button className="link nav-admin-btn" onClick={() => setShowLogin(true)} title="Admin sign in">
+              <Lock size={13} /> Admin
+            </button>
+          )}
         </div>
       </nav>
+
+      {showLogin && (
+        <AdminLogin onClose={() => setShowLogin(false)} onSuccess={() => setShowLogin(false)} />
+      )}
 
       <header className="hero" id="home">
         <div className="container">
@@ -238,9 +301,21 @@ export default function App() {
             </p>
           </div>
 
+          <ProjectAdmin
+            projects={dbProjects}
+            isAdmin={isAdmin}
+            onAdd={handleAddProject}
+            onUpdate={handleUpdateProject}
+            onDelete={handleDeleteProject}
+          />
+
           <div className="projects-grid">
-            {projects.map((p, i) => {
-              const Icon = ICONS[p.icon]
+            {projectsLoading ? (
+              <p className="empty-state">Loading projects…</p>
+            ) : dbProjects.length === 0 ? (
+              <p className="empty-state">No projects yet.</p>
+            ) : dbProjects.map((p, i) => {
+              const Icon = ICONS[p.icon || 'sparkles'] || ICONS.sparkles
               return (
                 <article
                   className="project-card reveal"
@@ -253,13 +328,13 @@ export default function App() {
                     <span className="pc-tag">{p.tag}</span>
                   </div>
                   <h3>{p.title}</h3>
-                  <p className="pc-desc">{p.desc}</p>
+                  <p className="pc-desc">{p.description}</p>
                   <div className="pc-stack">
-                    {p.stack.map((t) => <span className="chip" key={t}>{t}</span>)}
+                    {(p.stack || []).map((t) => <span className="chip" key={t}>{t}</span>)}
                   </div>
                   <div className="pc-links">
-                    <a href={p.link} target="_blank" rel="noreferrer" className="pc-link">
-                      {p.id === 'rietfontein' ? 'Visit site' : 'View on GitHub'} <ArrowUpRight size={13} />
+                    <a href={p.link} target="_blank" rel="noreferrer" className="pc-link pc-repo">
+                      <Github size={14} /> GitHub
                     </a>
                     {p.demo && (
                       <a href={p.demo} target="_blank" rel="noreferrer" className="pc-link pc-demo">
@@ -279,6 +354,8 @@ export default function App() {
           </a>
         </div>
       </section>
+
+      <Certificates isAdmin={isAdmin} />
 
       <section id="experience">
         <div className="container">

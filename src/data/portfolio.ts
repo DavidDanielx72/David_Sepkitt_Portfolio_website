@@ -90,6 +90,7 @@ export const projects: Project[] = [
     stack: ['AI', 'Sentiment Analysis', 'Data Visualization', 'React'],
     desc: 'An AI-powered sentiment analysis platform that transforms raw text into actionable insights. Whether you\u2019re analyzing customer feedback, reviews, documents, or online content, the application classifies sentiment, highlights recurring themes, visualizes results, and generates intelligent recommendations to help you better understand your data. Designed with a clean, premium interface and subtle cyber-inspired aesthetics, the platform provides a seamless experience for exploring sentiment through interactive visualizations and AI-assisted analysis.',
     link: 'https://github.com/DavidDanielx72/Analysis-BuddyAI',
+    demo: 'https://sentiment-analysis-ai.bolt.host/',
   },
   {
     id: 'rietfontein',
