@@ -216,8 +216,11 @@ section:nth-of-type(2n){background:linear-gradient(180deg,rgba(255,255,255,.012)
 .project-card .pc-stack .chip:nth-child(3){transition-delay:80ms}
 .project-card .pc-stack .chip:nth-child(4){transition-delay:120ms}
 .project-card:hover .pc-stack .chip{opacity:1;transform:translateY(0)}
+.project-card .pc-links{display:flex;align-items:center;gap:20px;position:relative;z-index:1;flex-wrap:wrap}
 .project-card .pc-link{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--accent);transition:gap .3s var(--ease-spring),color .3s ease,transform .4s var(--ease-spring);position:relative;z-index:1}
 .project-card:hover .pc-link{transform:translateZ(25px)}
+.project-card .pc-demo{color:var(--text-dim)}
+.project-card .pc-demo:hover{color:var(--accent-bright)}
 .project-card .pc-link:hover{gap:12px;color:var(--accent-bright)}
 
 /* Projects CTA */

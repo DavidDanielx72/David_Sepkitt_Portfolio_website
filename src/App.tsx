@@ -3,7 +3,7 @@ import CursorGlow from './components/CursorGlow'
 import AmbientParticles from './components/AmbientParticles'
 import TechCarousel from './components/TechCarousel'
 import {
-  ArrowUpRight, Mail, Github, Linkedin, Code, Layers, Database, Brain,
+  ArrowUpRight, ExternalLink, Mail, Github, Linkedin, Code, Layers, Database, Brain,
   Sparkles, Globe, MapPin, Languages, GraduationCap, ArrowRight,
 } from './components/Icons'
 
@@ -234,7 +234,7 @@ export default function App() {
             <span className="section-tag">Selected work</span>
             <h2 className="section-title">Projects I’ve <span className="accent-text">built</span></h2>
             <p className="section-sub">
-              From AI assistants to IoT hardware — each project links to its source on GitHub.
+              From AI assistants to sentiment analysis — each project links to its source on GitHub, with live demos where available.
             </p>
           </div>
 
@@ -257,9 +257,16 @@ export default function App() {
                   <div className="pc-stack">
                     {p.stack.map((t) => <span className="chip" key={t}>{t}</span>)}
                   </div>
-                  <a href={p.link} target="_blank" rel="noreferrer" className="pc-link">
-                    {p.id === 'rietfontein' ? 'Visit site' : 'View on GitHub'} <ArrowUpRight size={13} />
-                  </a>
+                  <div className="pc-links">
+                    <a href={p.link} target="_blank" rel="noreferrer" className="pc-link">
+                      {p.id === 'rietfontein' ? 'Visit site' : 'View on GitHub'} <ArrowUpRight size={13} />
+                    </a>
+                    {p.demo && (
+                      <a href={p.demo} target="_blank" rel="noreferrer" className="pc-link pc-demo">
+                        Live demo <ExternalLink size={13} />
+                      </a>
+                    )}
+                  </div>
                 </article>
               )
             })}

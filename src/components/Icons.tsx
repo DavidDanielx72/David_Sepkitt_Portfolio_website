@@ -16,6 +16,7 @@ const S = ({ size = 18, ...p }: P) => (
 )
 
 export const ArrowUpRight = (p: P) => <S {...p}><path d="M7 17 17 7" /><path d="M7 7h10v10" /></S>
+export const ExternalLink = (p: P) => <S {...p}><path d="M15 3h6v6" /><path d="M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></S>
 export const ArrowRight = (p: P) => <S {...p}><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></S>
 export const Mail = (p: P) => <S {...p}><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></S>
 export const Github = (p: P) => <S {...p}><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 1 5 1 5 1c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 8c0 3.5 3 5.5 6 5.5-.39.49-.66 1.05-.79 1.65S9.09 16.5 9 17v5" /><path d="M9 18c-4.51 2-5-2-7-2" /></S>

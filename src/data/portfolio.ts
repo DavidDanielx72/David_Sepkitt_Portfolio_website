@@ -40,7 +40,18 @@ export const skills = [
   { icon: 'brain', title: 'Soft Skills', desc: 'Collaboration and continuous learning.', tags: ['Problem-solving', 'Teamwork', 'Adaptability', 'Attention to Detail'] },
 ]
 
-export const projects = [
+export type Project = {
+  id: string
+  title: string
+  tag: string
+  icon: string
+  stack: string[]
+  desc: string
+  link: string
+  demo?: string
+}
+
+export const projects: Project[] = [
   {
     id: 'careerpilot',
     title: 'CareerPilot AI',
@@ -49,6 +60,7 @@ export const projects = [
     stack: ['React', 'AI', 'JavaScript', 'Supabase'],
     desc: 'An intelligent AI-powered career assistant that helps users create stronger, more professional CVs. CareerPilot analyses, improves, and generates CV content tailored to today\u2019s job market \u2014 offering personalised suggestions that help any CV stand out.',
     link: 'https://github.com/DavidDanielx72/Careerpilot_AI',
+    demo: 'https://aspire-ai-assistant.lovable.app/',
   },
   {
     id: 'ubuntu',
@@ -58,6 +70,7 @@ export const projects = [
     stack: ['AI', 'NLP', '11 SA Languages', 'Location'],
     desc: 'An AI-powered conversational assistant for SASSA, Home Affairs, and City of Cape Town services. Supports all 11 official South African languages, answers questions in the user\u2019s language, and helps users find nearby Home Affairs offices by location.',
     link: 'https://github.com/DavidDanielx72/Ubuntu-Navigator-AI-Chatbot-',
+    demo: 'https://cape-town-aid-guide.lovable.app/',
   },
   {
     id: 'sparky',
@@ -67,6 +80,16 @@ export const projects = [
     stack: ['React', 'TypeScript', 'AI', 'Supabase'],
     desc: 'Sparky Studio is an AI-powered creative platform designed to make content generation simple, intuitive, and enjoyable. Instead of functioning as a traditional chatbot, Sparky Studio separates its capabilities into dedicated workspaces, allowing users to generate images, create code, or produce written content in an organised environment. The application focuses on combining modern AI technologies with an engaging user experience to provide a fast, responsive, and visually appealing creative platform.',
     link: 'https://github.com/DavidDanielx72/Sparky-Studio-AI',
+    demo: 'https://sparky-studio.bolt.host/',
+  },
+  {
+    id: 'analysisbuddy',
+    title: 'Analysis Buddy AI',
+    tag: 'AI \u00b7 Sentiment Analysis',
+    icon: 'brain',
+    stack: ['AI', 'Sentiment Analysis', 'Data Visualization', 'React'],
+    desc: 'An AI-powered sentiment analysis platform that transforms raw text into actionable insights. Whether you\u2019re analyzing customer feedback, reviews, documents, or online content, the application classifies sentiment, highlights recurring themes, visualizes results, and generates intelligent recommendations to help you better understand your data. Designed with a clean, premium interface and subtle cyber-inspired aesthetics, the platform provides a seamless experience for exploring sentiment through interactive visualizations and AI-assisted analysis.',
+    link: 'https://github.com/DavidDanielx72/Analysis-BuddyAI',
   },
   {
     id: 'rietfontein',
