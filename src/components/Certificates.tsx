@@ -142,9 +142,9 @@ export default function Certificates({ isAdmin }: Props) {
   }
 
   return (
-    <section id="certificates" className="section">
-      <div className="section-inner">
-        <div className="section-head reveal">
+    <section id="certificates">
+      <div className="container">
+        <div className="reveal">
           <span className="section-tag">Credentials</span>
           <h2 className="section-title">Certificates</h2>
           <p className="section-sub">Continuous learning across AI, data science, and cloud platforms.</p>
@@ -170,7 +170,7 @@ export default function Certificates({ isAdmin }: Props) {
               <div
                 key={cert.id}
                 className="cert-card reveal"
-                style={{ animationDelay: `${i * 0.08}s` }}
+                style={{ '--i': i } as React.CSSProperties}
               >
                 <div className="cert-icon">
                   <Award size={28} />
