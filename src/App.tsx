@@ -7,7 +7,7 @@ import AdminLogin from './components/AdminLogin'
 import ProjectAdmin from './components/ProjectAdmin'
 import {
   ArrowUpRight, ExternalLink, Mail, Github, Linkedin, Code, Layers, Database, Brain,
-  Sparkles, Globe, MapPin, Languages, GraduationCap, ArrowRight, LogOut, Lock,
+  Sparkles, Globe, MapPin, Languages, GraduationCap, ArrowRight, LogOut,
 } from './components/Icons'
 import { supabase, type Project } from './lib/supabase'
 import { useAuth } from './hooks/useAuth'
@@ -49,6 +49,25 @@ export default function App() {
   }, [])
 
   useEffect(() => { loadProjects() }, [loadProjects])
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+        e.preventDefault()
+        setShowLogin((v) => !v)
+      }
+    }
+    const onHash = () => {
+      if (window.location.hash === '#admin') setShowLogin(true)
+    }
+    window.addEventListener('keydown', onKey)
+    window.addEventListener('hashchange', onHash)
+    onHash()
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      window.removeEventListener('hashchange', onHash)
+    }
+  }, [])
 
   const handleAddProject = async (p: { title: string; tag: string; icon: string; stack: string[]; description: string; link: string; demo: string }) => {
     const { error } = await supabase.from('projects').insert({
@@ -188,13 +207,9 @@ export default function App() {
               {id.charAt(0).toUpperCase() + id.slice(1)}
             </a>
           ))}
-          {isAdmin ? (
+          {isAdmin && (
             <button className="link nav-admin-btn" onClick={signOut} title="Sign out">
               <LogOut size={13} /> Admin
-            </button>
-          ) : (
-            <button className="link nav-admin-btn" onClick={() => setShowLogin(true)} title="Admin sign in">
-              <Lock size={13} /> Admin
             </button>
           )}
         </div>
