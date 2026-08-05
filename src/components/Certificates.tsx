@@ -29,6 +29,9 @@ export default function Certificates({ isAdmin }: Props) {
   const [editing, setEditing] = useState<EditState | null>(null)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [viewing, setViewing] = useState<Certificate | null>(null)
+  const [viewUrl, setViewUrl] = useState<string | null>(null)
+  const [viewLoading, setViewLoading] = useState(false)
   const load = useCallback(async () => {
     setLoading(true)
     const { data, error } = await supabase
@@ -54,8 +57,18 @@ export default function Certificates({ isAdmin }: Props) {
 
   const handleView = async (cert: Certificate) => {
     if (!cert.file_path) return
+    setViewing(cert)
+    setViewUrl(null)
+    setViewLoading(true)
     const url = await getSignedUrl(cert.file_path)
-    if (url) window.open(url, '_blank')
+    setViewUrl(url)
+    setViewLoading(false)
+  }
+
+  const closeViewer = () => {
+    setViewing(null)
+    setViewUrl(null)
+    setViewLoading(false)
   }
 
   const handleSave = async () => {
@@ -240,6 +253,33 @@ export default function Certificates({ isAdmin }: Props) {
                     {saving ? 'Saving…' : 'Save certificate'}
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {viewing && (
+          <div className="modal-overlay cert-viewer-overlay" onClick={closeViewer}>
+            <div className="cert-viewer-modal" onClick={(e) => e.stopPropagation()}>
+              <button className="modal-close" onClick={closeViewer} aria-label="Close"><X size={18} /></button>
+              <div className="cert-viewer-header">
+                <div className="cert-viewer-icon"><Award size={20} /></div>
+                <div>
+                  <h3>{viewing.title}</h3>
+                  {viewing.issuer && <span className="cert-issuer">{viewing.issuer}</span>}
+                </div>
+              </div>
+              <div className="cert-viewer-body">
+                {viewLoading ? (
+                  <div className="cert-viewer-loading">Loading certificate…</div>
+                ) : viewUrl ? (
+                  viewUrl.match(/\.pdf$/i) ? (
+                    <iframe src={viewUrl} title={viewing.title} className="cert-viewer-frame" />
+                  ) : (
+                    <img src={viewUrl} alt={viewing.title} className="cert-viewer-img" />
+                  )
+                ) : (
+                  <div className="cert-viewer-loading">Could not load certificate file.</div>
+                )}
               </div>
             </div>
           </div>
