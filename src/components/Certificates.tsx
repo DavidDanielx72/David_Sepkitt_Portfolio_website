@@ -23,6 +23,10 @@ const emptyEdit: EditState = {
   existingPath: null,
 }
 
+function isPdfPath(path: string): boolean {
+  return path.toLowerCase().endsWith('.pdf')
+}
+
 export default function Certificates({ isAdmin }: Props) {
   const [certs, setCerts] = useState<Certificate[]>([])
   const [loading, setLoading] = useState(true)
@@ -51,9 +55,25 @@ export default function Certificates({ isAdmin }: Props) {
   }, [load])
 
   const getSignedUrl = async (path: string): Promise<string | null> => {
-    const { data } = await supabase.storage.from('certificates').createSignedUrl(path, 3600)
-    return data?.signedUrl || null
+    const { data, error } = await supabase.storage.from('certificates').createSignedUrl(path, 3600)
+    if (error || !data?.signedUrl) return null
+    return data.signedUrl
   }
+
+  const [thumbUrls, setThumbUrls] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    let cancelled = false
+    certs.forEach(async (cert) => {
+      if (!cert.file_path) return
+      if (thumbUrls[cert.id]) return
+      const url = await getSignedUrl(cert.file_path)
+      if (!cancelled && url) {
+        setThumbUrls((prev) => ({ ...prev, [cert.id]: url }))
+      }
+    })
+    return () => { cancelled = true }
+  }, [certs, thumbUrls])
 
   const handleView = async (cert: Certificate) => {
     if (!cert.file_path) return
@@ -185,8 +205,20 @@ export default function Certificates({ isAdmin }: Props) {
                 className="cert-card reveal"
                 style={{ '--i': i } as React.CSSProperties}
               >
-                <div className="cert-icon">
-                  <Award size={28} />
+                <div className="cert-thumb" onClick={() => cert.file_path && handleView(cert)}>
+                  {cert.file_path ? (
+                    thumbUrls[cert.id] ? (
+                      isPdfPath(cert.file_path) ? (
+                        <div className="cert-thumb-pdf"><FileText size={32} /><span>PDF</span></div>
+                      ) : (
+                        <img src={thumbUrls[cert.id]} alt={cert.title} className="cert-thumb-img" />
+                      )
+                    ) : (
+                      <div className="cert-thumb-loading" />
+                    )
+                  ) : (
+                    <div className="cert-thumb-empty"><Award size={28} /></div>
+                  )}
                 </div>
                 <div className="cert-body">
                   <h4>{cert.title}</h4>
@@ -272,7 +304,7 @@ export default function Certificates({ isAdmin }: Props) {
                 {viewLoading ? (
                   <div className="cert-viewer-loading">Loading certificate…</div>
                 ) : viewUrl ? (
-                  viewUrl.match(/\.pdf$/i) ? (
+                  isPdfPath(viewing.file_path || '') ? (
                     <iframe src={viewUrl} title={viewing.title} className="cert-viewer-frame" />
                   ) : (
                     <img src={viewUrl} alt={viewing.title} className="cert-viewer-img" />
